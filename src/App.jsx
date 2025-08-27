@@ -13,8 +13,7 @@ function App() {
   };
   useEffect(() => {
     let localTodosString = localStorage.getItem("todos");
-    console.log("Raw todos from localStorage:", localTodosString);
-    if (localTodosString) {
+    if (localTodosString !== "undefined") {
       let localTodos = JSON.parse(localTodosString);
       setTodos(localTodos);
     }
@@ -26,7 +25,7 @@ function App() {
     setTodo(newTodo);
     let newTodos = todos.filter((item) => item.id != id);
     setTodos(newTodos);
-    saveToLS();
+    saveToLS(newTodos);
   };
   const handleDelete = (e) => {
     let id = e.target.name;
@@ -36,13 +35,13 @@ function App() {
   };
 
   const handleAdd = () => {
-    let newTodos = [
-      ...todo,
-      { id: uuidv4(), todo: { todo }, isCompleted: false },
-    ];
+    let newTodos = [...todos, { id: uuidv4(), todo, isCompleted: false }];
     setTodos(newTodos);
-    setTodo("");
     saveToLS(newTodos);
+    setTodo("");
+  };
+  const handleKeyDown = (e) => {
+    if (e.key == "Enter") handleAdd();
   };
 
   const handleChange = (e) => {
@@ -62,13 +61,14 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className="bg-violet-10 container mx-auto my-5 bg-violet-100 rounded-xl p-5 min-h-[70vh]">
+      <div className="bg-violet-10 container mx-auto my-5 bg-violet-100 rounded-xl p-5 min-h-[70vh] w-1/2">
         <div className="addTodo my-5">
           <h2 className="text-lg font-bold">Add todos</h2>
           <input
             type="text"
             className="bg-white w-1/2"
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             value={todo}
           />
           <button
